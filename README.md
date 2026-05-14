@@ -1,8 +1,10 @@
 # ReguLink Asia
 
-**Asia-Pacific Digital Trade Regulation Intelligence Platform**
+**Asia-Pacific Digital Trade Compliance Infrastructure**
 
-> Every answer traceable to the exact legal text. Evidence-based AI analysis across 10 jurisdictions — built for governments, SMEs, and researchers.
+*58 rules, manually curated from primary sources — quality over quantity.*
+
+> Asia-Pacific Digital Trade Compliance Infrastructure — grounded outputs with verified citations by design. Every claim traceable to official legal text.
 
 🔗 **Live Demo**: [https://regulink.tinystrack.com](https://regulink.tinystrack.com)  
 📋 **Built for**: [UNESCAP Global AI Hackathon on Digital Trade Regulatory Analysis 2026](https://www.unescap.org/events/2026/global-hackathon-using-ai-digital-trade-regulatory-analysis)  
@@ -56,7 +58,7 @@ graph TB
         F --> J[Confidence Score\nAuthority-weighted formula]
     end
 
-    subgraph "Frontend - Next.js 15"
+    subgraph "Frontend - Next.js 16"
         H --> K[Query Page\n+ History + Source Badges]
         I --> L[Diff Page\n+ Conflict Summary]
         J --> M[Advisor Page\n+ PDF Export]
@@ -119,7 +121,7 @@ Where:
 | China PIPL | 个人信息保护法 | http://www.npc.gov.cn/npc/c30834/202108/a8c4e3672c74491a80b53a172bb753fe.shtml |
 | China DSL | 数据安全法 | http://www.npc.gov.cn/npc/c30834/202106/7c9af12f51334a73b56d7938f99a788a.shtml |
 | China CBDT | 促进和规范数据跨境流动规定 | https://www.cac.gov.cn/2024-03/22/c_1712854558627335.htm |
-| Japan APPI | 個人情報保護法 2022 | https://www.ppc.go.jp/en/legal/policy/houndation/ |
+| Japan APPI | 個人情報保護法 2022 | https://www.ppc.go.jp/en/legal/policy/foundation/ |
 | Korea PIPA | 개인정보 보호법 2023 | https://www.pipc.go.kr/np/cop/bbs/selectBoardArticle.do?bbsId=BS217&mCode=D010030000&nttId=9175 |
 | Thailand PDPA | พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล | https://www.oic.go.th/FILEWEB/CABINFOCENTER3/DRAWER068/GENERAL/DATA0000/00000292.PDF |
 | Vietnam Decree 13 | Nghị định 13/2023/NĐ-CP | https://vanban.chinhphu.vn/?pageid=27160&docid=206990 |
@@ -199,8 +201,8 @@ DATABASE_PASSWORD=your_password
 DATABASE_NAME=regulink_asia
 
 # Groq API (free tier available)
-OPENROUTER_API_KEY=your_groq_key
-OPENROUTER_BASE_URL=https://api.groq.com/openai/v1
+GROQ_API_KEY=your_groq_key
+LLM_BASE_URL=https://api.groq.com/openai/v1
 OPENROUTER_MODEL=llama-3.1-8b-instant
 
 PORT=3110
@@ -216,6 +218,46 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 | **SDG 8** | Decent Work & Economic Growth | Reduces compliance barriers for SMEs engaging in cross-border digital trade across APAC |
 | **SDG 9** | Industry, Innovation & Infrastructure | Provides open-source regulatory infrastructure accessible to all — no expensive legal consultants required |
 | **SDG 16** | Peace, Justice & Strong Institutions | Every output is traceable to official legal text, enabling transparent, accountable, evidence-based policy analysis |
+
+---
+
+
+## Methodology
+
+ReguLink Asia follows a structured six-stage pipeline designed to minimise hallucination and maximise evidence traceability.
+
+### Stage 1 — Legal Text Ingestion
+Official government publications are manually identified and downloaded from authoritative sources (NPC, PPC Japan, PIPC Korea, OIC Thailand, CAC China, etc.). No live scraping is performed — this ensures source stability, authenticity, and demo reliability.
+
+### Stage 2 — Rule Normalisation
+Each document is parsed into discrete **RuleNode** records: one record per article or sub-clause addressing a specific regulatory dimension. Every record is assigned a `source_authority` classification:
+
+```
+official_law (1.0) > official_amendment (0.9) > ministry_guideline (0.7) > paraphrase (0.5)
+```
+
+This classification is human-assigned and human-reviewed — never inferred by AI.
+
+### Stage 3 — Structured Indexing
+RuleNodes are stored in a relational MySQL database with a normalised schema. The `dimension` field enables structured queries across 8 regulatory dimensions. The `requirement_type` field (`mandatory / conditional / voluntary / prohibited / not_regulated`) enables deterministic risk scoring without AI involvement.
+
+### Stage 4 — Query-Time Retrieval
+At query time, the system performs keyword extraction and dimension detection, then executes a targeted SQL query filtered by country and dimension. This closed-database retrieval ensures the LLM can only access pre-verified legal text — no open-web access is permitted at inference time.
+
+### Stage 5 — Evidence Grounding
+Retrieved RuleNodes are injected verbatim into the LLM context window. The system prompt enforces strict grounding:
+
+> *"Only use information from the provided context. If the answer is not found, respond: No rule found in current database."*
+
+Every factual sentence must end with a `[rule_id]` citation tag. Post-processing extracts these tags and links them to their source RuleNode records.
+
+### Stage 6 — Structured Output Generation
+Outputs are structured into three formats depending on the module:
+- **Query**: Natural language answer + inline citation pills + source sidebar
+- **Diff Engine**: Structured table with per-dimension comparison (pure SQL — zero LLM involvement)
+- **Compliance Advisor**: Risk level (HIGH/MEDIUM/LOW) + mandatory steps + PDF report
+
+Risk levels are computed deterministically from `requirement_type` counts in the database. Confidence scores are computed from source authority weights — both fully auditable and reproducible.
 
 ---
 
