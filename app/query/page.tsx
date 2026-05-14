@@ -53,12 +53,20 @@ function ConfidenceMeter({ score }: { score: number }) {
   const color = score >= 80 ? 'bg-green-500' : score >= 60 ? 'bg-yellow-500' : 'bg-red-500'
   const label = score >= 80 ? 'High' : score >= 60 ? 'Medium' : 'Low'
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
-        <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${score}%` }} />
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${score}%` }} />
+        </div>
+        <span className="text-xs font-mono font-bold text-slate-300 w-12">{score}%</span>
+        <span className="text-xs text-slate-500">{label}</span>
       </div>
-      <span className="text-xs font-mono font-bold text-slate-300 w-12">{score}%</span>
-      <span className="text-xs text-slate-500">{label}</span>
+      {score < 60 && (
+        <div className="flex items-center gap-2 text-xs text-amber-400 bg-amber-900/20 border border-amber-800 rounded-lg px-3 py-2">
+          <span>⚠</span>
+          <span>Low evidence coverage — answer may be incomplete. Try selecting specific jurisdictions or rephrasing your query.</span>
+        </div>
+      )}
     </div>
   )
 }

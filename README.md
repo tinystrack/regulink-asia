@@ -56,7 +56,7 @@ graph TB
         F --> J[Confidence Score\nAuthority-weighted formula]
     end
 
-    subgraph "Frontend - Next.js 16"
+    subgraph "Frontend - Next.js 15"
         H --> K[Query Page\n+ History + Source Badges]
         I --> L[Diff Page\n+ Conflict Summary]
         J --> M[Advisor Page\n+ PDF Export]
@@ -119,7 +119,7 @@ Where:
 | China PIPL | 个人信息保护法 | http://www.npc.gov.cn/npc/c30834/202108/a8c4e3672c74491a80b53a172bb753fe.shtml |
 | China DSL | 数据安全法 | http://www.npc.gov.cn/npc/c30834/202106/7c9af12f51334a73b56d7938f99a788a.shtml |
 | China CBDT | 促进和规范数据跨境流动规定 | https://www.cac.gov.cn/2024-03/22/c_1712854558627335.htm |
-| Japan APPI | 個人情報保護法 2022 | https://www.ppc.go.jp/en/legal/policy/foundation/ |
+| Japan APPI | 個人情報保護法 2022 | https://www.ppc.go.jp/en/legal/policy/houndation/ |
 | Korea PIPA | 개인정보 보호법 2023 | https://www.pipc.go.kr/np/cop/bbs/selectBoardArticle.do?bbsId=BS217&mCode=D010030000&nttId=9175 |
 | Thailand PDPA | พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล | https://www.oic.go.th/FILEWEB/CABINFOCENTER3/DRAWER068/GENERAL/DATA0000/00000292.PDF |
 | Vietnam Decree 13 | Nghị định 13/2023/NĐ-CP | https://vanban.chinhphu.vn/?pageid=27160&docid=206990 |
