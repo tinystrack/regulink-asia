@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
         if (!row.embedding) return { row, score: 0 };
         let vec: number[];
         try {
-          vec = JSON.parse(row.embedding) as number[];
+          vec = Array.isArray(row.embedding) ? row.embedding : JSON.parse(row.embedding) as number[];
         } catch {
           return { row, score: 0 };
         }
@@ -183,7 +183,7 @@ export async function POST(req: NextRequest) {
       article: row.article,
       dimension: row.dimension as RuleNode["dimension"],
       requirement_type: row.requirement_type as RuleNode["requirement_type"],
-      mechanism: row.mechanism ? JSON.parse(row.mechanism) : [],
+      mechanism: Array.isArray(row.mechanism) ? row.mechanism : (row.mechanism ? JSON.parse(row.mechanism) : []),
       text_en: row.text_en,
       source_url: row.source_url ?? "",
       effective_date: row.effective_date ?? "",
@@ -241,7 +241,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       answer,
       citations,
-      confidence: parseFloat(confidence.toFixed(3)),
+      confidence: Math.round(confidence * 100),
       retrievedCount: relevant.length,
       topScore: parseFloat(topScore.toFixed(3)),
       threshold: SIMILARITY_THRESHOLD,
