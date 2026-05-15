@@ -50,6 +50,30 @@ const COUNTRIES = [
     summary: 'Singapore PDPA is business-friendly. Comparable protection standard for transfers. Data portability right added in 2021. No localisation requirement.',
     law: 'PDPA 2021',
   },
+  {
+    code: 'AU', name: 'Australia', strictness: 2, localisation: 'none',
+    rcep: false, cptpp: true,
+    summary: 'Australia Privacy Act 1988 (amended 2022) requires cross-border transfers to countries with comparable protection. No general localisation. Strong enforcement by OAIC.',
+    law: 'Privacy Act 1988',
+  },
+  {
+    code: 'MY', name: 'Malaysia', strictness: 2, localisation: 'none',
+    rcep: true, cptpp: false,
+    summary: 'Malaysia PDPA 2010 prohibits cross-border transfers unless destination has comparable protection. Under review for 2024 amendments. No localisation requirement.',
+    law: 'PDPA 2010',
+  },
+  {
+    code: 'PH', name: 'Philippines', strictness: 3, localisation: 'none',
+    rcep: true, cptpp: false,
+    summary: 'Philippines Data Privacy Act 2012 requires adequate protection for cross-border transfers. NPC approval may be required. No general localisation mandate.',
+    law: 'Data Privacy Act 2012',
+  },
+  {
+    code: 'NZ', name: 'New Zealand', strictness: 2, localisation: 'none',
+    rcep: false, cptpp: true,
+    summary: 'New Zealand Privacy Act 2020 requires comparable safeguards for cross-border transfers. Business-friendly regime. No localisation requirement. Strong GDPR alignment.',
+    law: 'Privacy Act 2020',
+  },
 ]
 
 const STRICTNESS_COLOR = [

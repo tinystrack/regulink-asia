@@ -1,150 +1,260 @@
-import { NextRequest, NextResponse } from 'next/server'
-import pool from '@/lib/db'
-import { buildRAGPrompt } from '@/lib/prompt'
-import { Citation, QueryResponse } from '@/lib/types'
+// app/api/query/route.ts
+// ReguLink Asia — RAG Query Engine (Vector Search Edition)
+//
+// Flow:
+//   1. Embed the user's question via FastAPI embed service (localhost:3111)
+//   2. Load all rules + their embeddings from MySQL
+//   3. Cosine similarity (dot product of L2-normalised vectors) → Top-K
+//   4. Optional country filter applied AFTER scoring
+//   5. Low-similarity results filtered out (threshold = 0.35)
+//   6. Groq LLM generates answer from retrieved context
+//   7. Regex extracts [rule_id] citations from LLM output
+//   8. Confidence Score computed deterministically (unchanged formula)
 
-const GROQ_BASE_URL = process.env.GROQ_BASE_URL || 'https://api.groq.com/openai/v1'
-const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.1-8b-instant'
+import { NextRequest, NextResponse } from "next/server";
+import pool from "@/lib/db";
+import { buildRAGPrompt } from "@/lib/prompt";
+import { RuleNode, Citation } from "@/lib/types";
+import { RowDataPacket } from "mysql2";
 
-const AUTHORITY_SCORE: Record<string, number> = {
-  official_law: 1.0,
-  official_amendment: 0.9,
-  ministry_guideline: 0.7,
-  paraphrase: 0.5,
+const EMBED_SERVICE = process.env.EMBED_SERVICE_URL ?? "http://127.0.0.1:3111";
+const GROQ_API_KEY = process.env.GROQ_API_KEY!;
+const GROQ_BASE_URL = process.env.GROQ_BASE_URL ?? "https://api.groq.com/openai/v1";
+const GROQ_MODEL = process.env.GROQ_MODEL ?? "llama-3.1-8b-instant";
+
+// ── Tuning knobs ──────────────────────────────────────────────────────────────
+const SIMILARITY_THRESHOLD = 0.52; // below this → "no relevant rule found"
+const TOP_K = 8;                   // max rules fed to LLM context
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+interface RuleRow extends RowDataPacket {
+  id: string;
+  country: string;
+  law: string;
+  article: string;
+  dimension: string;
+  requirement_type: string;
+  mechanism: string | null;
+  text_en: string;
+  source_url: string | null;
+  effective_date: string | null;
+  source_authority: string;
+  embedding: string | null; // JSON-encoded float array
 }
 
-function computeConfidence(rules: any[]): number {
-  if (rules.length === 0) return 0
-  const authorityScore = rules.reduce((sum, r) => sum + (AUTHORITY_SCORE[r.source_authority] || 0.5), 0) / rules.length
-  const coverageScore = Math.min(rules.length / 5, 1.0)
-  const mandatoryBonus = rules.some(r => r.requirement_type === 'mandatory') ? 0.05 : 0
-  const raw = authorityScore * 0.6 + coverageScore * 0.35 + mandatoryBonus
-  return Math.round(Math.min(raw, 0.99) * 100)
+// ── Cosine similarity (dot product; vectors are L2-normalised at embed time) ──
+function dotProduct(a: number[], b: number[]): number {
+  let s = 0;
+  for (let i = 0; i < a.length; i++) s += a[i] * b[i];
+  return s;
 }
 
-async function searchRules(question: string, countryFilter?: string) {
-  const keywords = question
-    .toLowerCase()
-    .replace(/[^a-z0-9 ]/g, ' ')
-    .split(' ')
-    .filter((w) => w.length > 3)
-    .slice(0, 6)
-
-  const dimensionMap: Record<string, string> = {
-    transfer: 'cross_border_transfer',
-    'cross-border': 'cross_border_transfer',
-    crossborder: 'cross_border_transfer',
-    locali: 'data_localisation',
-    storage: 'data_localisation',
-    consent: 'consent',
-    security: 'security_assessment',
-    breach: 'breach_notification',
-    notification: 'breach_notification',
-    rights: 'data_subject_rights',
-    access: 'data_subject_rights',
-    deletion: 'data_subject_rights',
-    retention: 'retention',
+// ── Embed the query via FastAPI service ───────────────────────────────────────
+async function embedQuery(text: string): Promise<number[]> {
+  const res = await fetch(`${EMBED_SERVICE}/embed_one`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, normalize: true }),
+    // Give up quickly so the UI doesn't hang if the service is down
+    signal: AbortSignal.timeout(5000),
+  });
+  if (!res.ok) {
+    throw new Error(`Embed service error: ${res.status} ${await res.text()}`);
   }
-
-  const detectedDimensions = new Set<string>()
-  for (const kw of keywords) {
-    for (const [key, dim] of Object.entries(dimensionMap)) {
-      if (kw.includes(key)) detectedDimensions.add(dim)
-    }
-  }
-
-  let query = 'SELECT * FROM rules WHERE 1=1'
-  const params: string[] = []
-
-  if (countryFilter) {
-    const countries = countryFilter.toUpperCase().split(',').map((c) => c.trim()).filter(Boolean)
-    if (countries.length > 0) {
-      query += ` AND country IN (${countries.map(() => '?').join(',')})`
-      params.push(...countries)
-    }
-  }
-
-  if (detectedDimensions.size > 0) {
-    const dims = Array.from(detectedDimensions)
-    query += ` AND dimension IN (${dims.map(() => '?').join(',')})`
-    params.push(...dims)
-  }
-
-  query += ' ORDER BY source_authority ASC LIMIT 8'
-
-  const [rows] = await pool.execute(query, params) as any[]
-  return rows
+  const data = await res.json();
+  return data.embedding as number[];
 }
 
+// ── Confidence Score (unchanged deterministic formula) ────────────────────────
+function computeConfidenceScore(rules: RuleNode[]): number {
+  if (rules.length === 0) return 0;
+
+  const authorityMap: Record<string, number> = {
+    official_law: 1.0,
+    official_amendment: 0.9,
+    ministry_guideline: 0.7,
+    paraphrase: 0.5,
+  };
+
+  const avgAuthority =
+    rules.reduce((sum, r) => sum + (authorityMap[r.source_authority] ?? 0.5), 0) /
+    rules.length;
+
+  const coverageScore = Math.min(rules.length / 5, 1.0);
+  const mandatoryBonus = rules.some((r) => r.requirement_type === "mandatory") ? 0.05 : 0;
+
+  return Math.min(avgAuthority * 0.6 + coverageScore * 0.35 + mandatoryBonus, 1.0);
+}
+
+// ── Main handler ──────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
-    const { question, countries } = await req.json()
+    const body = await req.json();
+    const question: string = (body.question ?? "").trim();
+    const countryFilter: string[] = body.countries ?? []; // [] = no filter
 
-    if (!question || question.trim().length === 0) {
-      return NextResponse.json({ error: 'Question is required' }, { status: 400 })
+    if (!question) {
+      return NextResponse.json({ error: "question is required" }, { status: 400 });
     }
 
-    const rules = await searchRules(question, countries)
+    // ── 1. Embed the question ─────────────────────────────────────────────────
+    let queryVec: number[];
+    try {
+      queryVec = await embedQuery(question);
+    } catch (err) {
+      console.error("[query] embed service unavailable:", err);
+      return NextResponse.json(
+        { error: "Embedding service unavailable. Is embed_service.py running on port 3111?" },
+        { status: 503 }
+      );
+    }
 
-    const confidence = computeConfidence(rules as any[])
+    // ── 2. Load all rules with embeddings from MySQL ──────────────────────────
+    const conn = await pool.getConnection();
+    let rows: RuleRow[];
+    try {
+      const countryClause =
+        countryFilter.length > 0
+          ? `AND country IN (${countryFilter.map(() => "?").join(",")})`
+          : "";
 
-    if (rules.length === 0) {
+      const [result] = await conn.query<RuleRow[]>(
+        `SELECT id, country, law, article, dimension, requirement_type,
+                mechanism, text_en, source_url, effective_date, source_authority,
+                embedding
+         FROM rules
+         WHERE embedding IS NOT NULL ${countryClause}`,
+        countryFilter.length > 0 ? countryFilter : []
+      );
+      rows = result;
+    } finally {
+      conn.release();
+    }
+
+    if (rows.length === 0) {
       return NextResponse.json({
-        answer: 'No rule found in current database for this query. The database currently covers CN, JP, KR, TH, VN, SG, IN, ID, RCEP, and CPTPP regulations.',
+        answer: "No rules found in the database for the selected countries.",
         citations: [],
         confidence: 0,
-      })
+        retrievedCount: 0,
+        topScore: 0,
+      });
     }
 
-    const context = rules
-      .map((r: any) => `[${r.id}] ${r.law} ${r.article} (${r.country}): ${r.text_en}`)
-      .join('\n\n')
+    // ── 3. Score every rule by cosine similarity ──────────────────────────────
+    const scored = rows
+      .map((row) => {
+        if (!row.embedding) return { row, score: 0 };
+        let vec: number[];
+        try {
+          vec = JSON.parse(row.embedding) as number[];
+        } catch {
+          return { row, score: 0 };
+        }
+        return { row, score: dotProduct(queryVec, vec) };
+      })
+      .sort((a, b) => b.score - a.score);
 
-    const prompt = buildRAGPrompt(question, context)
+    const topScore = scored[0]?.score ?? 0;
 
-    const aiRes = await fetch(`${GROQ_BASE_URL}/chat/completions`, {
-      method: 'POST',
+    // ── 4. Apply threshold + take Top-K ──────────────────────────────────────
+    const relevant = scored
+      .filter((s) => s.score >= SIMILARITY_THRESHOLD)
+      .slice(0, TOP_K);
+
+    if (relevant.length === 0) {
+      return NextResponse.json({
+        answer:
+          "No rule found in current database for this query. " +
+          `(Best match score: ${topScore.toFixed(3)}, threshold: ${SIMILARITY_THRESHOLD})`,
+        citations: [],
+        confidence: 0,
+        retrievedCount: 0,
+        topScore: parseFloat(topScore.toFixed(3)),
+        threshold: SIMILARITY_THRESHOLD,
+      });
+    }
+
+    // ── 5. Build RuleNode array for LLM context ───────────────────────────────
+    const retrievedRules: RuleNode[] = relevant.map(({ row }) => ({
+      id: row.id,
+      country: row.country,
+      law: row.law,
+      article: row.article,
+      dimension: row.dimension as RuleNode["dimension"],
+      requirement_type: row.requirement_type as RuleNode["requirement_type"],
+      mechanism: row.mechanism ? JSON.parse(row.mechanism) : [],
+      text_en: row.text_en,
+      source_url: row.source_url ?? "",
+      effective_date: row.effective_date ?? "",
+      source_authority: row.source_authority as RuleNode["source_authority"],
+    }));
+
+    // ── 6. Call Groq LLM ──────────────────────────────────────────────────────
+    const context = retrievedRules.map(r => `[${r.id}] ${r.law} ${r.article} (${r.country}): ${r.text_en}`).join("\n\n");
+    const prompt = buildRAGPrompt(question, context);
+    const llmRes = await fetch(`${GROQ_BASE_URL}/chat/completions`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://regulink.tinystrack.com',
-        'X-Title': 'ReguLink Asia',
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${GROQ_API_KEY}`,
       },
       body: JSON.stringify({
         model: GROQ_MODEL,
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 1000,
         temperature: 0.1,
+        max_tokens: 1024,
+        messages: [{ role: "user", content: prompt }],
       }),
-    })
+    });
 
-    if (!aiRes.ok) {
-      const err = await aiRes.text()
-      console.error('AI API error:', err)
-      return NextResponse.json({ error: 'AI service unavailable' }, { status: 502 })
+    if (!llmRes.ok) {
+      const errText = await llmRes.text();
+      console.error("[query] Groq error:", errText);
+      return NextResponse.json({ error: "LLM call failed" }, { status: 502 });
     }
 
-    const aiData = await aiRes.json()
-    const answer = aiData.choices?.[0]?.message?.content || 'No response from AI.'
+    const llmData = await llmRes.json();
+    const answer: string = llmData.choices?.[0]?.message?.content ?? "";
 
-    const citedIds = [...new Set([...answer.matchAll(/\[([A-Z]{2,6}-[A-Z0-9-]+)\]/g)].map((m: any) => m[1]))]
+    // ── 7. Extract [rule_id] citations from answer ────────────────────────────
+    const citedIds = new Set<string>(
+      [...answer.matchAll(/\[([A-Z]{2,5}-[A-Z0-9-]+)\]/g)].map((m) => m[1])
+    );
 
-    const citations: Citation[] = rules
-      .filter((r: any) => citedIds.includes(r.id))
-      .map((r: any) => ({
+    const citations: Citation[] = retrievedRules
+      .filter((r) => citedIds.has(r.id))
+      .map((r) => ({
         rule_id: r.id,
         country: r.country,
         law: r.law,
         article: r.article,
-        text_en: r.text_en.substring(0, 300) + (r.text_en.length > 300 ? '...' : ''),
+        text_en: r.text_en,
         source_url: r.source_url,
-        source_authority: r.source_authority,
         effective_date: r.effective_date,
-      }))
+        source_authority: r.source_authority,
+        requirement_type: r.requirement_type,
+      }));
 
-    return NextResponse.json({ answer, citations, confidence })
+    // ── 8. Confidence Score ───────────────────────────────────────────────────
+    const confidence = computeConfidenceScore(retrievedRules);
+
+    return NextResponse.json({
+      answer,
+      citations,
+      confidence: parseFloat(confidence.toFixed(3)),
+      retrievedCount: relevant.length,
+      topScore: parseFloat(topScore.toFixed(3)),
+      threshold: SIMILARITY_THRESHOLD,
+      // Debug info (remove in production if desired)
+      _debug: {
+        topMatches: scored.slice(0, 5).map((s) => ({
+          id: s.row.id,
+          score: parseFloat(s.score.toFixed(4)),
+        })),
+      },
+    });
   } catch (err) {
-    console.error('Query error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error("[query] unhandled error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

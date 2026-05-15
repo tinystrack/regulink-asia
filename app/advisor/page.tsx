@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 
 const ExportPDF = dynamic(() => import('../components/ExportPDF'), { ssr: false })
 
-const COUNTRIES = ['CN', 'JP', 'KR', 'TH', 'VN', 'SG', 'IN', 'ID']
+const COUNTRIES = ['CN', 'JP', 'KR', 'TH', 'VN', 'SG', 'IN', 'ID', 'AU', 'MY', 'PH', 'NZ']
 const DATA_TYPES = ['personal data', 'user behavioral data', 'financial data', 'health data', 'biometric data', 'employee data']
 
 export default function AdvisorPage() {

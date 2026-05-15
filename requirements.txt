@@ -1,0 +1,8 @@
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+sentence-transformers==3.3.1
+torch==2.5.1          # CPU-only; ~700MB download but only once
+numpy==1.26.4
+mysql-connector-python==9.1.0
+python-dotenv==1.0.1
+requests==2.32.3

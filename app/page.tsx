@@ -9,6 +9,10 @@ const COUNTRIES = [
   { code: 'TH', name: 'Thailand', law: 'PDPA', level: 3 },
   { code: 'JP', name: 'Japan', law: 'APPI 2022', level: 2 },
   { code: 'SG', name: 'Singapore', law: 'PDPA 2021', level: 2 },
+  { code: 'AU', name: 'Australia', law: 'Privacy Act 1988', level: 2 },
+  { code: 'MY', name: 'Malaysia', law: 'PDPA 2010', level: 2 },
+  { code: 'PH', name: 'Philippines', law: 'Data Privacy Act', level: 3 },
+  { code: 'NZ', name: 'New Zealand', law: 'Privacy Act 2020', level: 2 },
   { code: 'RCEP', name: 'RCEP', law: 'Chapter 12', level: 1 },
   { code: 'CPTPP', name: 'CPTPP', law: 'Chapter 14', level: 1 },
 ]
@@ -18,7 +22,7 @@ const LEVEL_LABEL = ['', 'Open', 'Moderate', 'Conditional', 'Strict', 'Very Stri
 
 const FEATURES = [
   { icon: '🔍', title: 'Evidence-Based Query', desc: 'Ask any question about APAC digital trade regulations. Every answer cites the exact legal article and source URL.', href: '/query' },
-  { icon: '⚖️', title: 'Regulatory Diff Engine', desc: 'Compare two jurisdictions side-by-side across 8 regulatory dimensions. Database-driven, not AI-generated.', href: '/diff' },
+  { icon: '⚖️', title: 'Regulatory Diff Engine', desc: 'Compare two jurisdictions side-by-side across 10 regulatory dimensions. Database-driven, not AI-generated.', href: '/diff' },
   { icon: '🛡️', title: 'Compliance Advisor', desc: 'Input a transfer scenario. Get structured compliance steps, risk level, and verified citations — deterministically computed.', href: '/advisor' },
   { icon: '🗺️', title: 'Explainable Map', desc: 'Visual overview of data governance strictness across Asia-Pacific, with RCEP/CPTPP membership indicators.', href: '/map' },
 ]
@@ -36,7 +40,7 @@ export default function Home() {
           <span className="text-sky-400">Regulation Intelligence</span>
         </h1>
         <p className="text-slate-400 text-xl max-w-2xl mx-auto">
-          Every answer traceable to the exact legal text. Evidence-based AI analysis across 10 jurisdictions — built for governments, SMEs, and researchers.
+          Every answer traceable to the exact legal text. Evidence-based AI analysis across 14 jurisdictions — built for governments, SMEs, and researchers.
         </p>
         <div className="flex gap-3 justify-center">
           <Link href="/query" className="btn-primary text-base px-6 py-3">Ask a Question →</Link>
@@ -61,7 +65,7 @@ export default function Home() {
       {/* Coverage */}
       <section>
         <h2 className="text-2xl font-semibold mb-2 text-center">Coverage</h2>
-        <p className="text-slate-500 text-center mb-6 text-sm">10 jurisdictions · 57 verified legal rules · 8 regulatory dimensions</p>
+        <p className="text-slate-500 text-center mb-6 text-sm">14 jurisdictions · 104 verified legal rules · 10 regulatory dimensions</p>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {COUNTRIES.map((c) => (
             <div key={c.code} className="card text-center space-y-2 py-4">

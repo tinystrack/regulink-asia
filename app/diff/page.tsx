@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 
-const COUNTRIES = ['CN', 'JP', 'KR', 'TH', 'VN', 'SG', 'IN', 'ID', 'RCEP', 'CPTPP']
+const COUNTRIES = ['CN', 'JP', 'KR', 'TH', 'VN', 'SG', 'IN', 'ID', 'AU', 'MY', 'PH', 'NZ', 'RCEP', 'CPTPP']
 const DIMENSIONS: Record<string, string> = {
   cross_border_transfer: 'Cross-Border Transfer',
   data_localisation: 'Data Localisation',

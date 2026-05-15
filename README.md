@@ -2,7 +2,7 @@
 
 **Asia-Pacific Digital Trade Compliance Infrastructure**
 
-*58 rules, manually curated from primary sources — quality over quantity.*
+*104 rules, manually curated from primary sources — quality over quantity.*
 
 > Asia-Pacific Digital Trade Compliance Infrastructure — grounded outputs with verified citations by design. Every claim traceable to official legal text.
 
@@ -14,7 +14,7 @@
 
 ## The Problem
 
-Asia-Pacific digital trade regulations are fragmented across 10+ jurisdictions, frequently updated, and often misunderstood by SMEs and policymakers alike. Existing tools either:
+Asia-Pacific digital trade regulations are fragmented across 14 jurisdictions, frequently updated, and often misunderstood by SMEs and policymakers alike. Existing tools either:
 - Use black-box AI that hallucinates legal text without citations
 - Require expensive legal consultants for basic compliance questions
 - Provide no machine-verifiable evidence trail
@@ -42,7 +42,7 @@ ReguLink Asia is an open-source RAG (Retrieval-Augmented Generation) system with
 graph TB
     subgraph "Data Layer"
         A[Official Gov Sources\nNPC, PPC, PIPC, OIC, CAC...] --> B[Manual Curation\n& Review]
-        B --> C[(MySQL RuleNode DB\n58 rules · 10 jurisdictions)]
+        B --> C[(MySQL RuleNode DB\n104 rules · 14 jurisdictions)]
     end
 
     subgraph "Core Engines"
@@ -239,7 +239,7 @@ official_law (1.0) > official_amendment (0.9) > ministry_guideline (0.7) > parap
 This classification is human-assigned and human-reviewed — never inferred by AI.
 
 ### Stage 3 — Structured Indexing
-RuleNodes are stored in a relational MySQL database with a normalised schema. The `dimension` field enables structured queries across 8 regulatory dimensions. The `requirement_type` field (`mandatory / conditional / voluntary / prohibited / not_regulated`) enables deterministic risk scoring without AI involvement.
+RuleNodes are stored in a relational MySQL database with a normalised schema. The `dimension` field enables structured queries across 10 regulatory dimensions. The `requirement_type` field (`mandatory / conditional / voluntary / prohibited / not_regulated`) enables deterministic risk scoring without AI involvement.
 
 ### Stage 4 — Query-Time Retrieval
 At query time, the system performs keyword extraction and dimension detection, then executes a targeted SQL query filtered by country and dimension. This closed-database retrieval ensures the LLM can only access pre-verified legal text — no open-web access is permitted at inference time.

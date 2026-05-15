@@ -33,7 +33,7 @@ const EXAMPLES = [
   'How does CPTPP restrict data localisation requirements?',
 ]
 
-const COUNTRIES = ['CN', 'JP', 'KR', 'TH', 'VN', 'SG', 'IN', 'ID', 'RCEP', 'CPTPP']
+const COUNTRIES = ['CN', 'JP', 'KR', 'TH', 'VN', 'SG', 'IN', 'ID', 'AU', 'MY', 'PH', 'NZ', 'RCEP', 'CPTPP']
 
 const AUTHORITY_COLOR: Record<string, string> = {
   official_law: 'bg-green-900 text-green-300 border-green-700',

@@ -9,6 +9,8 @@ export type Dimension =
   | 'data_subject_rights'
   | 'breach_notification'
   | 'retention'
+  | 'data_portability'
+  | 'algorithmic_decision'
 
 export interface RuleNode {
   id: string
@@ -32,6 +34,9 @@ export interface Citation {
   article: string
   text_en: string
   source_url: string
+  effective_date?: string
+  requirement_type?: string
+  source_authority?: string
 }
 
 export interface QueryResponse {
