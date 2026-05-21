@@ -95,7 +95,7 @@ Where:
 
 ## Data Coverage
 
-### Jurisdictions (10)
+### Jurisdictions (14)
 
 | Code | Jurisdiction | Primary Law | Effective Date | Source Authority |
 |------|-------------|-------------|----------------|-----------------|
@@ -109,6 +109,10 @@ Where:
 | ID | Indonesia | PDP Law No. 27/2022 | 2022-10-17 | Official Law |
 | RCEP | RCEP Agreement | Chapter 12 E-Commerce | 2022-01-01 | Official Law |
 | CPTPP | CPTPP Agreement | Chapter 14 E-Commerce | 2018-12-30 | Official Law |
+| PH | Philippines | Data Privacy Act 2012 | 2012-09-08 | Official Law |
+| AU | Australia | Privacy Act 1988 (2022 Amendment) | 2022-12-13 | Official Law |
+| MY | Malaysia | PDPA 2010 | 2013-11-15 | Official Law |
+| NZ | New Zealand | Privacy Act 2020 | 2020-12-01 | Official Law |
 
 ### Regulatory Dimensions (8)
 
