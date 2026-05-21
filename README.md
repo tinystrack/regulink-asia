@@ -95,11 +95,11 @@ Where:
 
 ## Data Coverage
 
-### Legal Frameworks (14)
+### Asia-Pacific Data Governance Database
 
-ReguLink Asia covers **12 Asia-Pacific jurisdictions** and **2 regional trade agreements** governing cross-border digital commerce.
+ReguLink Asia covers **12 Asia-Pacific jurisdictions** with full data protection law texts, plus **2 regional trade agreements** (RCEP and CPTPP) cross-referenced as context for cross-border commerce rules.
 
-**Jurisdictions (12)**
+#### Jurisdictions (12)
 
 | Code | Jurisdiction | Primary Law | Effective Date | Source Authority |
 |------|--------------|-------------|----------------|------------------|
@@ -116,7 +116,9 @@ ReguLink Asia covers **12 Asia-Pacific jurisdictions** and **2 regional trade ag
 | MY | Malaysia | PDPA 2010 | 2013-11-15 | Official Law |
 | NZ | New Zealand | Privacy Act 2020 | 2020-12-01 | Official Law |
 
-**Regional Trade Agreements (2)**
+#### Trade Agreement Context (2)
+
+RCEP and CPTPP membership is indicated on each jurisdiction card on the Regulatory Map. The full text of relevant chapters (RCEP Chapter 12 and CPTPP Chapter 14 — both covering Electronic Commerce) is queryable through the citation system.
 
 | Code | Agreement | Relevant Chapter | Effective Date | Source Authority |
 |------|-----------|------------------|----------------|------------------|
@@ -127,31 +129,32 @@ ReguLink Asia covers **12 Asia-Pacific jurisdictions** and **2 regional trade ag
 
 `cross_border_transfer` · `data_localisation` · `consent` · `security_assessment` · `breach_notification` · `data_subject_rights` · `retention` · `privacy_policy`
 
-### Jurisdiction Laws
+---
 
-| Jurisdiction | Document | Official URL |
-|--------------|----------|--------------|
-| China PIPL | 个人信息保护法 | http://www.npc.gov.cn/npc/c30834/202108/a8c4e3672c74491a80b53a172bb753fe.shtml |
-| China DSL | 数据安全法 | http://www.npc.gov.cn/npc/c30834/202106/7c9af12f51334a73b56d7938f99a788a.shtml |
-| China CBDT | 促进和规范数据跨境流动规定 | https://www.cac.gov.cn/2024-03/22/c_1712854558627335.htm |
-| Japan APPI | 個人情報保護法 2022 | https://www.ppc.go.jp/en/legal/policy/foundation/ |
-| Korea PIPA | 개인정보 보호법 2023 | https://www.pipc.go.kr/np/cop/bbs/selectBoardArticle.do?bbsId=BS217&mCode=D010030000&nttId=9175 |
-| Thailand PDPA | พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล | https://www.oic.go.th/FILEWEB/CABINFOCENTER3/DRAWER068/GENERAL/DATA0000/00000292.PDF |
-| Vietnam Decree 13 | Nghị định 13/2023/NĐ-CP | https://vanban.chinhphu.vn/?pageid=27160&docid=206990 |
-| Singapore PDPA | Personal Data Protection Act 2021 | https://www.pdpc.gov.sg/Overview-of-PDPA/The-Legislation/Personal-Data-Protection-Act |
-| India DPDP | Digital Personal Data Protection Act 2023 | https://www.meity.gov.in/writereaddata/files/Digital%20Personal%20Data%20Protection%20Act%202023.pdf |
-| Indonesia PDP | UU No. 27 Tahun 2022 | https://jdih.kominfo.go.id/produk_hukum/view/id/630/t/undangundang+nomor+27+tahun+2022 |
-| Philippines DPA | Data Privacy Act of 2012 (RA 10173) | https://privacy.gov.ph/data-privacy-act/ |
-| Australia Privacy Act | Privacy Act 1988 (consolidated) | https://www.legislation.gov.au/C2004A03712/latest |
-| Malaysia PDPA | Personal Data Protection Act 2010 | https://www.pdp.gov.my/jpdpv2/akta-709/akta-perlindungan-data-peribadi-2010/ |
-| New Zealand Privacy Act | Privacy Act 2020 | https://www.legislation.govt.nz/act/public/2020/0031/latest/LMS23223.html |
+## Official Data Sources
 
-### Regional Trade Agreements
+All legal texts and treaty documents in our database are sourced from official government publications and intergovernmental treaty repositories.
 
-| Treaty | Chapter | Official URL |
-|--------|---------|--------------|
-| RCEP | Chapter 12 — Electronic Commerce | https://www.dfat.gov.au/trade/agreements/in-force/rcep/rcep-text-and-associated-documents |
-| CPTPP | Chapter 14 — Electronic Commerce | https://www.dfat.gov.au/trade/agreements/in-force/cptpp/cptpp-text-and-associated-documents |
+> **Note on source traceability**
+>
+> Government legal repositories across Asia-Pacific vary significantly in accessibility — some require HTTP-only access, regional IP restrictions, or are subject to frequent URL restructuring. To ensure long-term reliability, ReguLink Asia preserves the full legal text in our database, indexed by permanent citation IDs (e.g., `CN-PIPL-38`, `TH-PDPA-28`, `RCEP-CH12-9`). Every answer the system returns can be traced back to a specific clause, independent of external URL availability.
+
+| Jurisdiction | Document | Source Authority |
+|--------------|----------|------------------|
+| China | 个人信息保护法 (PIPL) · 数据安全法 (DSL) · 促进和规范数据跨境流动规定 (CBDT 2024) | National People's Congress (npc.gov.cn) · Cyberspace Administration (cac.gov.cn) |
+| Japan | 個人情報保護法 (APPI) 2022 Amendment | Personal Information Protection Commission (ppc.go.jp) |
+| South Korea | 개인정보 보호법 (PIPA) 2023 Amendment | Personal Information Protection Commission (pipc.go.kr) |
+| Thailand | พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล (PDPA B.E. 2562) | Office of the Personal Data Protection Committee (pdpc.or.th) |
+| Vietnam | Nghị định 13/2023/NĐ-CP | Government Portal (chinhphu.vn) |
+| Singapore | Personal Data Protection Act 2012 (2021 Amendment) | Personal Data Protection Commission (pdpc.gov.sg) |
+| India | Digital Personal Data Protection Act 2023 | Ministry of Electronics and Information Technology (meity.gov.in) |
+| Indonesia | UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi | National Legislation Database (bpk.go.id) |
+| Philippines | Republic Act No. 10173 — Data Privacy Act of 2012 | National Privacy Commission (privacy.gov.ph) |
+| Australia | Privacy Act 1988 (Cth) — 2022 Amendment | Federal Register of Legislation (legislation.gov.au) |
+| Malaysia | Personal Data Protection Act 2010 | Department of Personal Data Protection (pdp.gov.my) |
+| New Zealand | Privacy Act 2020 | New Zealand Legislation (legislation.govt.nz) |
+| RCEP | Chapter 12 — Electronic Commerce | RCEP Joint Committee · ASEAN Secretariat (asean.org) |
+| CPTPP | Chapter 14 — Electronic Commerce | New Zealand Ministry of Foreign Affairs & Trade (mfat.govt.nz) |
 
 ---
 
