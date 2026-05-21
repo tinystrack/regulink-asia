@@ -95,10 +95,14 @@ Where:
 
 ## Data Coverage
 
-### Jurisdictions (14)
+### Legal Frameworks (14)
+
+ReguLink Asia covers **12 Asia-Pacific jurisdictions** and **2 regional trade agreements** governing cross-border digital commerce.
+
+**Jurisdictions (12)**
 
 | Code | Jurisdiction | Primary Law | Effective Date | Source Authority |
-|------|-------------|-------------|----------------|-----------------|
+|------|--------------|-------------|----------------|------------------|
 | CN | China | PIPL + DSL + CBDT 2024 | 2021-11-01 | Official Law |
 | JP | Japan | APPI 2022 Amendment | 2022-04-01 | Official Law |
 | KR | South Korea | PIPA 2023 Amendment | 2023-09-15 | Official Law |
@@ -107,21 +111,26 @@ Where:
 | SG | Singapore | PDPA 2021 Amendment | 2021-02-01 | Official Law |
 | IN | India | DPDP Act 2023 | 2023-08-11 | Official Law |
 | ID | Indonesia | PDP Law No. 27/2022 | 2022-10-17 | Official Law |
-| RCEP | RCEP Agreement | Chapter 12 E-Commerce | 2022-01-01 | Official Law |
-| CPTPP | CPTPP Agreement | Chapter 14 E-Commerce | 2018-12-30 | Official Law |
 | PH | Philippines | Data Privacy Act 2012 | 2012-09-08 | Official Law |
 | AU | Australia | Privacy Act 1988 (2022 Amendment) | 2022-12-13 | Official Law |
 | MY | Malaysia | PDPA 2010 | 2013-11-15 | Official Law |
 | NZ | New Zealand | Privacy Act 2020 | 2020-12-01 | Official Law |
 
+**Regional Trade Agreements (2)**
+
+| Code | Agreement | Relevant Chapter | Effective Date | Source Authority |
+|------|-----------|------------------|----------------|------------------|
+| RCEP | Regional Comprehensive Economic Partnership | Chapter 12 — Electronic Commerce | 2022-01-01 | Official Treaty |
+| CPTPP | Comprehensive and Progressive Agreement for Trans-Pacific Partnership | Chapter 14 — Electronic Commerce | 2018-12-30 | Official Treaty |
+
 ### Regulatory Dimensions (8)
 
 `cross_border_transfer` · `data_localisation` · `consent` · `security_assessment` · `breach_notification` · `data_subject_rights` · `retention` · `privacy_policy`
 
-### Official Data Sources
+### Jurisdiction Laws
 
 | Jurisdiction | Document | Official URL |
-|---|---|---|
+|--------------|----------|--------------|
 | China PIPL | 个人信息保护法 | http://www.npc.gov.cn/npc/c30834/202108/a8c4e3672c74491a80b53a172bb753fe.shtml |
 | China DSL | 数据安全法 | http://www.npc.gov.cn/npc/c30834/202106/7c9af12f51334a73b56d7938f99a788a.shtml |
 | China CBDT | 促进和规范数据跨境流动规定 | https://www.cac.gov.cn/2024-03/22/c_1712854558627335.htm |
@@ -132,8 +141,17 @@ Where:
 | Singapore PDPA | Personal Data Protection Act 2021 | https://www.pdpc.gov.sg/Overview-of-PDPA/The-Legislation/Personal-Data-Protection-Act |
 | India DPDP | Digital Personal Data Protection Act 2023 | https://www.meity.gov.in/writereaddata/files/Digital%20Personal%20Data%20Protection%20Act%202023.pdf |
 | Indonesia PDP | UU No. 27 Tahun 2022 | https://jdih.kominfo.go.id/produk_hukum/view/id/630/t/undangundang+nomor+27+tahun+2022 |
-| RCEP | Chapter 12 Electronic Commerce | https://www.dfat.gov.au/trade/agreements/in-force/rcep/rcep-text-and-associated-documents |
-| CPTPP | Chapter 14 Electronic Commerce | https://www.dfat.gov.au/trade/agreements/in-force/cptpp/cptpp-text-and-associated-documents |
+| Philippines DPA | Data Privacy Act of 2012 (RA 10173) | https://privacy.gov.ph/data-privacy-act/ |
+| Australia Privacy Act | Privacy Act 1988 (consolidated) | https://www.legislation.gov.au/C2004A03712/latest |
+| Malaysia PDPA | Personal Data Protection Act 2010 | https://www.pdp.gov.my/jpdpv2/akta-709/akta-perlindungan-data-peribadi-2010/ |
+| New Zealand Privacy Act | Privacy Act 2020 | https://www.legislation.govt.nz/act/public/2020/0031/latest/LMS23223.html |
+
+### Regional Trade Agreements
+
+| Treaty | Chapter | Official URL |
+|--------|---------|--------------|
+| RCEP | Chapter 12 — Electronic Commerce | https://www.dfat.gov.au/trade/agreements/in-force/rcep/rcep-text-and-associated-documents |
+| CPTPP | Chapter 14 — Electronic Commerce | https://www.dfat.gov.au/trade/agreements/in-force/cptpp/cptpp-text-and-associated-documents |
 
 ---
 
