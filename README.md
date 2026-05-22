@@ -8,13 +8,13 @@
 
 🔗 **Live Demo**: [https://regulink.tinystrack.com](https://regulink.tinystrack.com)  
 📋 **Built for**: [UNESCAP Global AI Hackathon on Digital Trade Regulatory Analysis 2026](https://www.unescap.org/events/2026/global-hackathon-using-ai-digital-trade-regulatory-analysis)  
-📄 **License**: MIT
+📄 **License**: Apache License 2.0
 
 ---
 
 ## The Problem
 
-Asia-Pacific digital trade regulations are fragmented across 14 jurisdictions, frequently updated, and often misunderstood by SMEs and policymakers alike. Existing tools either:
+Asia-Pacific digital trade regulations are fragmented across 12 jurisdictions and 2 regional trade agreements, frequently updated, and often misunderstood by SMEs and policymakers alike. Existing tools either:
 - Use black-box AI that hallucinates legal text without citations
 - Require expensive legal consultants for basic compliance questions
 - Provide no machine-verifiable evidence trail
@@ -30,7 +30,7 @@ ReguLink Asia is an open-source RAG (Retrieval-Augmented Generation) system with
 | Module | Description | Evidence Method |
 |--------|-------------|-----------------|
 | **Evidence-Based Query** | Natural language Q&A on APAC regulations | RAG retrieval + citation tags in every response |
-| **Regulatory Diff Engine** | Side-by-side comparison across 8 dimensions | Pure database query — zero AI generation |
+| **Regulatory Diff Engine** | Side-by-side comparison across 10 dimensions | ...
 | **Compliance Advisor** | Transfer scenario analysis with risk level | Deterministic rule counting + AI summary |
 | **Explainable Map** | Visual data governance strictness overview | Structured data from RuleNode database |
 
@@ -42,7 +42,7 @@ ReguLink Asia is an open-source RAG (Retrieval-Augmented Generation) system with
 graph TB
     subgraph "Data Layer"
         A[Official Gov Sources\nNPC, PPC, PIPC, OIC, CAC...] --> B[Manual Curation\n& Review]
-        B --> C[(MySQL RuleNode DB\n104 rules · 14 jurisdictions)]
+        B --> C[(MySQL RuleNode DB\n104 rules · 12 jurisdictions and 2 regional trade agreements)]
     end
 
     subgraph "Core Engines"
@@ -125,10 +125,9 @@ RCEP and CPTPP membership is indicated on each jurisdiction card on the Regulato
 | RCEP | Regional Comprehensive Economic Partnership | Chapter 12 — Electronic Commerce | 2022-01-01 | Official Treaty |
 | CPTPP | Comprehensive and Progressive Agreement for Trans-Pacific Partnership | Chapter 14 — Electronic Commerce | 2018-12-30 | Official Treaty |
 
-### Regulatory Dimensions (8)
+### Regulatory Dimensions (10)
 
-`cross_border_transfer` · `data_localisation` · `consent` · `security_assessment` · `breach_notification` · `data_subject_rights` · `retention` · `privacy_policy`
-
+`cross_border_transfer` · `data_localisation` · `consent` · `security_assessment` · `breach_notification` · `data_subject_rights` · `retention` · `privacy_policy` · `data_portability` · `algorithmic_decision`
 ---
 
 ## Official Data Sources
@@ -209,7 +208,7 @@ bun run scripts/seed-kr.ts
 bun run scripts/seed-th.ts
 bun run scripts/seed-vn.ts
 bun run scripts/seed-sg.ts
-bun run scripts/seed-extra.ts  # India, Indonesia, RCEP, CPTPP
+bun run scripts/seed-extra.ts  # India, Indonesia, Philippines, Australia, Malaysia, New Zealand, RCEP, CPTPP
 
 # Build and run
 bun run build
@@ -330,9 +329,9 @@ regulink-asia/
     ├── seed-th.ts              # Thailand PDPA
     ├── seed-vn.ts              # Vietnam Decree 13
     ├── seed-sg.ts              # Singapore PDPA 2021
-    └── seed-extra.ts           # India DPDP + Indonesia PDP + RCEP + CPTPP
+    └── └── seed-extra.ts       # India + Indonesia + Philippines + Australia + Malaysia + New Zealand + RCEP + CPTPP
 ```
 
 ---
 
-*Built with ❤️ for UNESCAP AI Hackathon 2026 · Open Source · MIT License*
+*Built with ❤️ for UNESCAP AI Hackathon 2026 · Open Source · Apache License 2.0*
