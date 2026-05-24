@@ -6,10 +6,11 @@
 //   2. Load all rules + their embeddings from MySQL
 //   3. Cosine similarity (dot product of L2-normalised vectors) → Top-K
 //   4. Optional country filter applied AFTER scoring
-//   5. Low-similarity results filtered out (threshold = 0.35)
+//   5. Low-similarity results filtered out (threshold = 0.52)
 //   6. Groq LLM generates answer from retrieved context
 //   7. Regex extracts [rule_id] citations from LLM output
-//   8. Confidence Score computed deterministically (unchanged formula)
+//   7B. If LLM produced no citations → transparent rejection (deterministic 0% confidence)
+//   8. Confidence Score computed from cited rules only (not just retrieved)
 
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
@@ -137,7 +138,9 @@ export async function POST(req: NextRequest) {
         citations: [],
         confidence: 0,
         retrievedCount: 0,
+        citedCount: 0,
         topScore: 0,
+        threshold: SIMILARITY_THRESHOLD,
       });
     }
 
@@ -170,6 +173,7 @@ export async function POST(req: NextRequest) {
         citations: [],
         confidence: 0,
         retrievedCount: 0,
+        citedCount: 0,
         topScore: parseFloat(topScore.toFixed(3)),
         threshold: SIMILARITY_THRESHOLD,
       });
@@ -235,14 +239,46 @@ export async function POST(req: NextRequest) {
         requirement_type: r.requirement_type,
       }));
 
-    // ── 8. Confidence Score ───────────────────────────────────────────────────
-    const confidence = computeConfidenceScore(retrievedRules);
+    // ── 7B. LLM refusal detection ─────────────────────────────────────────────
+    // Critical anti-hallucination guard: if the LLM produced no citations,
+    // the vector matches were not truly relevant. Return a transparent
+    // rejection with deterministic 0% confidence — never let the UI display
+    // a high score that the evidence doesn't support.
+    if (citations.length === 0) {
+      return NextResponse.json({
+        answer:
+          "No rule found in current database for this query. " +
+          `(Best match score: ${topScore.toFixed(3)}, threshold: ${SIMILARITY_THRESHOLD})`,
+        citations: [],
+        confidence: 0,
+        retrievedCount: relevant.length,
+        citedCount: 0,
+        topScore: parseFloat(topScore.toFixed(3)),
+        threshold: SIMILARITY_THRESHOLD,
+        _debug: {
+          topMatches: scored.slice(0, 5).map((s) => ({
+            id: s.row.id,
+            score: parseFloat(s.score.toFixed(4)),
+          })),
+          note: "LLM produced no citations — vector matches found but not truly relevant",
+        },
+      });
+    }
+
+    // ── 8. Confidence Score (based on cited rules only) ───────────────────────
+    // Critical design: confidence is computed from rules the LLM actually
+    // cited, not from rules merely retrieved by vector similarity. This
+    // ensures the score reflects what the user sees (citations), not what
+    // the system internally searched (retrieved candidates).
+    const citedRules = retrievedRules.filter((r) => citedIds.has(r.id));
+    const confidence = computeConfidenceScore(citedRules);
 
     return NextResponse.json({
       answer,
       citations,
       confidence: Math.round(confidence * 100),
       retrievedCount: relevant.length,
+      citedCount: citations.length,
       topScore: parseFloat(topScore.toFixed(3)),
       threshold: SIMILARITY_THRESHOLD,
       // Debug info (remove in production if desired)

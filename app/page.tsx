@@ -13,8 +13,6 @@ const COUNTRIES = [
   { code: 'MY', name: 'Malaysia', law: 'PDPA 2010', level: 2 },
   { code: 'PH', name: 'Philippines', law: 'Data Privacy Act', level: 3 },
   { code: 'NZ', name: 'New Zealand', law: 'Privacy Act 2020', level: 2 },
-  { code: 'RCEP', name: 'RCEP', law: 'Chapter 12', level: 1 },
-  { code: 'CPTPP', name: 'CPTPP', law: 'Chapter 14', level: 1 },
 ]
 
 const LEVEL_COLOR = ['', 'bg-green-900 text-green-300', 'bg-green-800 text-green-200', 'bg-yellow-900 text-yellow-300', 'bg-orange-900 text-orange-300', 'bg-red-900 text-red-300']
@@ -40,7 +38,7 @@ export default function Home() {
           <span className="text-sky-400">Regulation Intelligence</span>
         </h1>
         <p className="text-slate-400 text-xl max-w-2xl mx-auto">
-          Every answer traceable to the exact legal text. Evidence-based AI analysis across 14 jurisdictions — built for governments, SMEs, and researchers.
+          Every answer traceable to the exact legal text. Evidence-based AI analysis across 12 jurisdictions — built for governments, SMEs, and researchers.
         </p>
         <div className="flex gap-3 justify-center">
           <Link href="/query" className="btn-primary text-base px-6 py-3">Ask a Question →</Link>
@@ -65,8 +63,8 @@ export default function Home() {
       {/* Coverage */}
       <section>
         <h2 className="text-2xl font-semibold mb-2 text-center">Coverage</h2>
-        <p className="text-slate-500 text-center mb-6 text-sm">14 jurisdictions · 104 verified legal rules · 10 regulatory dimensions</p>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <p className="text-slate-500 text-center mb-6 text-sm">12 jurisdictions · 104 verified legal rules · 10 regulatory dimensions</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {COUNTRIES.map((c) => (
             <div key={c.code} className="card text-center space-y-2 py-4">
               <div className="font-bold text-lg">{c.code}</div>
